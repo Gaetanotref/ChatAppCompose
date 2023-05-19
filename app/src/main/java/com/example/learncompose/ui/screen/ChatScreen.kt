@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -33,18 +32,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.learncompose.ui.elements.RecyclerViewForCompose
-import com.example.learncompose.ui.model.UiModel
+import com.example.learncompose.ui.model.ChatItemModel
 
 @Composable
 fun Chatscreen() {
     var list by remember {
-        mutableStateOf(emptyList<UiModel>())
+        mutableStateOf(emptyList<ChatItemModel>())
     }
     var text by remember {
         mutableStateOf("")
     }
     var nome by remember {
-        mutableStateOf("")
+        mutableStateOf("Utente")
     }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -121,7 +120,7 @@ fun Chatscreen() {
             Button(
                 onClick = {
                     if (text.isNotBlank()) {
-                        val newModel = UiModel(otherText = text, uri = imageUri, name = nome)
+                        val newModel = ChatItemModel(otherText = text, uri = imageUri, name = nome)
                         list += newModel
                         text = ""
                     }

@@ -29,10 +29,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.learncompose.R
-import com.example.learncompose.ui.model.UiModel
+import com.example.learncompose.ui.model.ChatItemModel
 
 @Composable
-fun FirstComposableFun(state: UiModel, modifier: Modifier = Modifier) {
+fun ChatItem(state: ChatItemModel, modifier: Modifier = Modifier) {
 
     Row(modifier = Modifier.padding(all = 8.dp)) {
 
