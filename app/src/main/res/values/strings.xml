@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="this_is_a_description">this is a description</string>
+    <string name="app_name">ChatAppCompose</string>
+</resources>
