@@ -1,11 +1,8 @@
 package com.example.learncompose.ui.screen
 
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,14 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
@@ -30,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.learncompose.ui.elements.RecyclerViewForCompose
 import com.example.learncompose.ui.model.UiModel
@@ -43,30 +43,19 @@ fun Chatscreen() {
     var text by remember {
         mutableStateOf("")
     }
+    var nome by remember {
+        mutableStateOf("")
+    }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+        contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri: Uri? ->
             imageUri = uri
+            list = list.map { it.copy(uri = uri)}
         }
     )
-    var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-    val context = LocalContext.current
-
-
-    imageUri?.let {
-        bitmap = if (Build.VERSION.SDK_INT < 28) {
-            MediaStore.Images
-                .Media.getBitmap(context.contentResolver, it)
-        } else {
-            val source = ImageDecoder.createSource(context.contentResolver, it)
-            ImageDecoder.decodeBitmap(source)
-        }
-    }
 
 
     Column(
@@ -75,20 +64,40 @@ fun Chatscreen() {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.End,
+                .fillMaxWidth().padding(top = 10.dp),
             verticalAlignment = Alignment.Top
         ) {
             Button(
-                onClick = { launcher.launch("image/*") }) {
+                onClick = {
+                    launcher
+                        .launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                },
+                modifier = Modifier.padding(top = 8.dp).height(54.dp).clip(CircleShape)
+            ) {
                 Text(text = "Cambia immagine")
             }
+            OutlinedTextField(
+                modifier = Modifier.weight(0.4f),
+                shape = CircleShape,
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                },
+                value = nome,
+                onValueChange = { newName ->
+                    nome = newName
+                    list = list.map { it.copy(name = newName) }
+                },
+                label = { Text(text = "Nome") }
+            )
         }
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Bottom
         ) {
-            bitmap?.let { RecyclerViewForCompose(listOfModel = list, bitmap = it) }
+            RecyclerViewForCompose(
+                listOfModel = list
+            )
         }
 
         Row(
@@ -112,7 +121,7 @@ fun Chatscreen() {
             Button(
                 onClick = {
                     if (text.isNotBlank()) {
-                        val newModel = UiModel(otherText = text)
+                        val newModel = UiModel(otherText = text, uri = imageUri, name = nome)
                         list += newModel
                         text = ""
                     }
@@ -124,4 +133,5 @@ fun Chatscreen() {
         }
     }
 }
+
 

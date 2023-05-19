@@ -1,9 +1,7 @@
 package com.example.learncompose.ui.elements
 
-import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -26,31 +24,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.learncompose.R
 import com.example.learncompose.ui.model.UiModel
 
 @Composable
-fun FirstComposableFun(state: UiModel, modifier: Modifier = Modifier,bitmap: Bitmap?) {
+fun FirstComposableFun(state: UiModel, modifier: Modifier = Modifier) {
 
     Row(modifier = Modifier.padding(all = 8.dp)) {
 
-        if (bitmap != null) {
-            bitmap.asImageBitmap().let {
-                Image(
-                    bitmap = it,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(60.dp)
-                        .border(
-                            1.5.dp, MaterialTheme.colors.primary,
-                            CircleShape
-                        )
-                )
-            }
+        if (state.uri != null) {
+            AsyncImage(
+                model = state.uri,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .border(
+                        1.5.dp, MaterialTheme.colors.primary,
+                        CircleShape
+                    ).clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
         } else {
             Icon(
                 modifier = modifier
@@ -68,11 +65,13 @@ fun FirstComposableFun(state: UiModel, modifier: Modifier = Modifier,bitmap: Bit
         val surfaceColor by animateColorAsState(if (isExpanded) MaterialTheme.colors.primary else MaterialTheme.colors.surface) {
         }
         Column() {
-            Text(
-                text = state.name,
-                color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.h5
-            )
+            state.name?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colors.primary,
+                    style = MaterialTheme.typography.h5
+                )
+            }
             Spacer(modifier = Modifier.width(4.dp))
             Surface(
                 shape = MaterialTheme.shapes.medium,
